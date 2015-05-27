@@ -61,7 +61,7 @@ public class QuestionController {
 		if (bindingResult.hasFieldErrors()) {
 			List<FieldError> errors = bindingResult.getFieldErrors();
 			for (FieldError error : errors) {
-				logger.debug("field : {}, error code : {}", error.getField(),
+				logger.debug("field : {}, error code `: {}", error.getField(),
 						error.getCode());
 			}
 			return "qna/form";
