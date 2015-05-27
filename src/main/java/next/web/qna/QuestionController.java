@@ -6,6 +6,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 
 import next.model.qna.Question;
+import next.service.qna.ExistedAnotherUserException;
 import next.service.qna.QnaService;
 
 import org.slf4j.Logger;
@@ -19,10 +20,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-@RequestMapping(value={"", "/questions"})
+@RequestMapping(value = { "", "/questions" })
 public class QuestionController {
-	private static final Logger logger = LoggerFactory.getLogger(QuestionController.class);
-	
+	private static final Logger logger = LoggerFactory
+			.getLogger(QuestionController.class);
+	private long temp = 0;
+
 	@Resource(name = "qnaService")
 	private QnaService qnaService;
 
@@ -31,30 +34,47 @@ public class QuestionController {
 		model.addAttribute("questions", qnaService.findAll());
 		return "qna/list";
 	}
-	
+
 	@RequestMapping("/{id}")
 	public String show(@PathVariable long id, Model model) {
 		model.addAttribute("question", qnaService.findById(id));
 		return "qna/show";
 	}
-	
+
 	@RequestMapping("/form")
 	public String form(Model model) {
 		model.addAttribute("question", new Question());
 		return "qna/form";
 	}
-	
-	@RequestMapping(value="", method=RequestMethod.POST)
-	public String save(@Valid Question question, BindingResult bindingResult) {
+
+	@RequestMapping("/{id}/form")
+	public String modifyForm(@PathVariable long id, Model model) {
+		model.addAttribute("question", qnaService.findById(id));
+		temp = id;
+		return "qna/form";
+	}
+
+	@RequestMapping(value = "", method = RequestMethod.POST)
+	public String save(@Valid Question question, BindingResult bindingResult)
+			throws ExistedAnotherUserException {
 		logger.debug("Question : {}", question);
 		if (bindingResult.hasFieldErrors()) {
 			List<FieldError> errors = bindingResult.getFieldErrors();
 			for (FieldError error : errors) {
-				logger.debug("field : {}, error code : {}", error.getField(), error.getCode());
+				logger.debug("field : {}, error code : {}", error.getField(),
+						error.getCode());
 			}
 			return "qna/form";
 		}
-		qnaService.save(question);
+
+		if (temp != 0) {
+			qnaService.delete(temp);
+			qnaService.save(question);
+			temp = 0;
+		} else {
+			qnaService.save(question);
+		}
 		return "redirect:/";
 	}
+
 }
