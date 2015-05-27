@@ -34,4 +34,11 @@
         c:messageSource-ref="messageSource"
     />
     
+    <mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<bean class="next.interceptor.Interceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+    
 </beans>
