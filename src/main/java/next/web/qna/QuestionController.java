@@ -77,4 +77,11 @@ public class QuestionController {
 		return "redirect:/";
 	}
 
+	@RequestMapping("/{id}/delete")
+	public String delete(@PathVariable long id) throws ExistedAnotherUserException {
+		qnaService.delete(id);
+
+		return "redirect:/";
+	}
+
 }

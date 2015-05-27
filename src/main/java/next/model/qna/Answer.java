@@ -76,11 +76,11 @@ public class Answer {
 	}
 	
 	public boolean isSameUser(String writer) {
-		if (this.writer == null) {
+		if (this.writer == writer) {
 			return false;
 		}
 		
-		return this.writer.equals(writer);
+		return !this.writer.equals(writer);
 	}
 	
 	@Override
